@@ -37,3 +37,24 @@ def updatevendor(request, pk):
         return Response(serializer.data, status=200) 
     else:
         return Response(serializer.errors, status=400)  
+    
+
+@api_view(['GET'])
+def getvendor(request,pk):
+    try:
+        vendor_toget = Vendor.objects.get(id=pk)
+    except Vendor.DoesNotExist:
+        return Response({"message": "Vendor not found"}, status=404)
+    serializer = Vendorserializer(vendor_toget, many=False)
+    return Response(serializer.data)
+
+
+@api_view(['DELETE'])
+def deletevendor(request, pk):
+    try:
+        vendor_todelete = Vendor.objects.get(id=pk)
+    except Vendor.DoesNotExist:
+        return Response({"message": "Vendor not found"}, status=404)
+    
+    vendor_todelete.delete()
+    return Response({"message": "Vendor successfully deleted"}, status=204)
