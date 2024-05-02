@@ -1,60 +1,95 @@
-from django.shortcuts import render,redirect
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+from django.shortcuts import get_object_or_404,redirect,render
 from .models import Vendor,PurchaseOrder,HistoricalPerformance
-from .serializers import Vendorserializer,VendorCreateSerializer
+from .serializers import VendorSerializer, VendorCreateSerializer, PurchaseOrderSerializer
 
-# Create your views here.
 @api_view(['GET'])
-def listvendors(request):
+def list_vendors(request):
     vendors = Vendor.objects.all()
     if vendors:
-        serializer = Vendorserializer(vendors, many=True)
+        serializer = VendorSerializer(vendors, many=True)
         return Response(serializer.data)
     else:
-        return Response({"message": "No vendors found"}, status=404)
-
+        return Response({"message": "No vendors exist"}, status=status.HTTP_404_NOT_FOUND)
+    
 @api_view(['POST'])
-def createvendor(request):
+def create_vendor(request):
     serializer = VendorCreateSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return redirect('api/vendors/')
-    else:
-        return Response(serializer.errors, status=400)  
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['GET'])
+def get_vendor(request, pk):
+    vendor_instance = get_object_or_404(Vendor, pk=pk)
+    serializer = VendorSerializer(vendor_instance)
+    return Response(serializer.data)
 
 @api_view(['PUT'])
-def updatevendor(request, pk):
-    try:
-        vendor_toupdate = Vendor.objects.get(id=pk)
-    except Vendor.DoesNotExist:
-        return Response({"message": "Vendor not found"}, status=404)
-
-    serializer = VendorCreateSerializer(instance=vendor_toupdate, data=request.data)
+def update_vendor(request, pk):
+    vendor_instance = get_object_or_404(Vendor, pk=pk)
+    serializer = VendorCreateSerializer(instance=vendor_instance, data=request.data)
     if serializer.is_valid():
         serializer.save()
-        return Response(serializer.data, status=200) 
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+def delete_vendor(request, pk):
+    vendor_instance = get_object_or_404(Vendor, pk=pk)
+    vendor_instance.delete()
+    return Response({"message": "Vendor successfully deleted"}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+def create_purchase(request):
+    serializer = PurchaseOrderSerializer(data=request.data)
+    if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def list_purchase_orders(request):
+    vendor_id = request.GET.get('vendor_id')
+
+    if vendor_id:
+        purchase_orders = PurchaseOrder.objects.filter(vendor_id=vendor_id)
     else:
-        return Response(serializer.errors, status=400)  
+        purchase_orders = PurchaseOrder.objects.all()
+
+    if purchase_orders.exists():
+        serializer = PurchaseOrderSerializer(purchase_orders, many=True)
+        return Response(serializer.data)
+    else:
+        return Response({"message": "No purchase orders yet"})
     
 
 @api_view(['GET'])
-def getvendor(request,pk):
-    try:
-        vendor_toget = Vendor.objects.get(id=pk)
-    except Vendor.DoesNotExist:
-        return Response({"message": "Vendor not found"}, status=404)
-    serializer = Vendorserializer(vendor_toget, many=False)
+def get_purchase_order(request, po_id):
+    purchase_order = get_object_or_404(PurchaseOrder, po_number=po_id)
+    serializer = PurchaseOrderSerializer(purchase_order)
     return Response(serializer.data)
 
 
+@api_view(['PUT'])
+def update_purchase_order(request, po_id):
+    purchase_order = get_object_or_404(PurchaseOrder, po_number=po_id)
+    serializer = PurchaseOrderSerializer(instance=purchase_order, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=400)
+
+
 @api_view(['DELETE'])
-def deletevendor(request, pk):
-    try:
-        vendor_todelete = Vendor.objects.get(id=pk)
-    except Vendor.DoesNotExist:
-        return Response({"message": "Vendor not found"}, status=404)
-    
-    vendor_todelete.delete()
-    return Response({"message": "Vendor successfully deleted"}, status=204)
+def delete_purchase_order(request, po_id):
+    purchase_order = get_object_or_404(PurchaseOrder, po_number=po_id)
+    purchase_order.delete()
+    return Response({"message": "Purchase order successfully deleted"}, status=204)
+
+

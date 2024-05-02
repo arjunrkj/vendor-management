@@ -17,7 +17,7 @@ class Vendor(models.Model):
 class PurchaseOrder(models.Model):
     po_number = models.CharField(max_length=50, unique=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
-    order_date = models.DateTimeField()
+    order_date = models.DateTimeField()    # ISO 8601
     delivery_date = models.DateTimeField()
     items = models.TextField(default=None)
     quantity = models.IntegerField()
