@@ -11,8 +11,10 @@ class Vendor(models.Model):
     average_response_time = models.FloatField(default=0.0)
     fulfillment_rate = models.FloatField(default=0.0)
 
-    def __str__(self):
-        return self.name
+    def update_historical_performance(self):
+        historical_performance, created = HistoricalPerformance.objects.get_or_create(vendor=self)
+        historical_performance.average_response_time = self.average_response_time
+        historical_performance.save()
 
 class PurchaseOrder(models.Model):
     po_number = models.CharField(max_length=50, unique=True)
@@ -31,12 +33,9 @@ class PurchaseOrder(models.Model):
     
 
 class HistoricalPerformance(models.Model):
-    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
-    date = models.DateTimeField()
+    vendor = models.OneToOneField(Vendor, on_delete=models.CASCADE, primary_key=True)
+    date = models.DateTimeField(auto_now_add=True)
     on_time_delivery_rate = models.FloatField(default=0.0)
     quality_rating_avg = models.FloatField(default=0.0)
     average_response_time = models.FloatField(default=0.0)
     fulfillment_rate = models.FloatField(default=0.0)
-
-    def __str__(self):
-        return f"{self.vendor.name} - {self.date}"

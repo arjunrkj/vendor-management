@@ -33,6 +33,9 @@ urlpatterns = [
      #delete purchase order based on po_number
      path('purchase_orders/<str:po_id>/delete/', views.delete_purchase_order, name='purchase-delete'),
 
+     #get performance history by vendor id
+     path('vendors/<str:pk>/performance/', views.get_performance, name='performance-get'),
+
 
 
 

@@ -1,9 +1,10 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
+from datetime import datetime
 from django.shortcuts import get_object_or_404,redirect,render
 from .models import Vendor,PurchaseOrder,HistoricalPerformance
-from .serializers import VendorSerializer, VendorCreateSerializer, PurchaseOrderSerializer
+from .serializers import VendorSerializer, VendorCreateSerializer, PurchaseOrderSerializer, HistoricalPerformanceSerializer
 
 @api_view(['GET'])
 def list_vendors(request):
@@ -18,9 +19,19 @@ def list_vendors(request):
 def create_vendor(request):
     serializer = VendorCreateSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save()
+        vendor_instance = serializer.save()
+        
+        # Creating performance instance
+        historical_performance = HistoricalPerformance.objects.create(
+            vendor=vendor_instance,
+            date=datetime.now(),
+        )
+        historical_performance.save()
+        
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 @api_view(['GET'])
 def get_vendor(request, pk):
@@ -93,3 +104,8 @@ def delete_purchase_order(request, po_id):
     return Response({"message": "Purchase order successfully deleted"}, status=204)
 
 
+@api_view(['GET'])
+def get_performance(request,pk):
+    performance  = get_object_or_404(HistoricalPerformance, vendor_id=pk)
+    serializer = HistoricalPerformanceSerializer(performance)
+    return Response(serializer.data)
