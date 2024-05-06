@@ -1,5 +1,5 @@
 from django.db import models
-import json
+from django.db.models import JSONField
 
 class Vendor(models.Model):
     name = models.CharField(max_length=100)
@@ -16,20 +16,26 @@ class Vendor(models.Model):
         historical_performance.average_response_time = self.average_response_time
         historical_performance.save()
 
+    def update_historical_performance_metrics(self):
+        historical_performance, created = HistoricalPerformance.objects.get_or_create(vendor=self)
+        historical_performance.on_time_delivery_rate = self.on_time_delivery_rate
+        historical_performance.quality_rating_avg = self.quality_rating_avg
+        historical_performance.fulfillment_rate = self.fulfillment_rate
+        historical_performance.save()
+
+
 class PurchaseOrder(models.Model):
     po_number = models.CharField(max_length=50, unique=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     order_date = models.DateTimeField()    # ISO 8601
     delivery_date = models.DateTimeField()
-    items = models.TextField(default=None)
+    items = JSONField(default=dict)
     quantity = models.IntegerField()
     status = models.CharField(max_length=50)
     quality_rating = models.FloatField(null=True, blank=True)
     issue_date = models.DateTimeField()
     acknowledgment_date = models.DateTimeField(null=True, blank=True)
 
-    def __str__(self):
-        return self.po_number
     
 
 class HistoricalPerformance(models.Model):

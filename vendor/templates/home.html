@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Patterns</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .url-pattern {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1> URL Patterns</h1>
+    
+    <div class="url-pattern">
+        <strong>List all vendors:</strong> /api/vendors/
+    </div>
+    
+    <div class="url-pattern">
+        <strong>Create a new vendor:</strong> /api/vendors/create/
+    </div>
+    
+    <div class="url-pattern">
+        <strong>Retrieve a specific vendor's details:</strong> /api/vendors/&lt;vendor_id&gt;/
+    </div>
+    
+    <div class="url-pattern">
+        <strong>Update a vendor:</strong> /api/vendors/&lt;vendor_id&gt;/update/
+    </div>
+    
+    <div class="url-pattern">
+        <strong>Delete a specific vendor:</strong> /api/vendors/&lt;vendor_id&gt;/delete/
+    </div>
+    
+    <div class="url-pattern">
+        <strong>Create a purchase history:</strong> /api/purchase_orders/create/
+    </div>
+    
+    <div class="url-pattern">
+        <strong>List Purchase orders:</strong> /api/purchase_orders/
+    </div>
+
+    <div class="url-pattern">
+        <strong>List purchase orders by vendor id:</strong> /api/purchase_orders/?vendor_id="id" 
+    </div>
+
+    <div class="url-pattern">
+        <strong>Get specific purchase order based on po_number:</strong> /api/purchase_orders/&lt;po_number&gt;/
+    </div>
+    
+    <div class="url-pattern">
+        <strong>Update purchase order based on po_number:</strong> /api/purchase_orders/&lt;po_number&gt;/update/
+    </div>
+    
+    <div class="url-pattern">
+        <strong>Delete purchase order based on po_number:</strong> /api/purchase_orders/&lt;po_number&gt;/delete/
+    </div>
+    
+    <div class="url-pattern">
+        <strong>Get performance history by vendor id:</strong> /api/vendors/&lt;vendor_id&gt;/performance/
+    </div>
+
+    
+    
+    <!-- Add more URL patterns following the same structure -->
+    
+</body>
+</html>

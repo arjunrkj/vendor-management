@@ -81,25 +81,26 @@ def list_purchase_orders(request):
     
 
 @api_view(['GET'])
-def get_purchase_order(request, po_id):
-    purchase_order = get_object_or_404(PurchaseOrder, po_number=po_id)
+def get_purchase_order(request, po_number):
+    purchase_order = get_object_or_404(PurchaseOrder, po_number=po_number)
     serializer = PurchaseOrderSerializer(purchase_order)
     return Response(serializer.data)
 
 
 @api_view(['PUT'])
-def update_purchase_order(request, po_id):
-    purchase_order = get_object_or_404(PurchaseOrder, po_number=po_id)
+def update_purchase_order(request, po_number):
+    purchase_order = get_object_or_404(PurchaseOrder, po_number=po_number)
     serializer = PurchaseOrderSerializer(instance=purchase_order, data=request.data)
     if serializer.is_valid():
         serializer.save()
+        serializer.update_vendor_performance_metrics()
         return Response(serializer.data)
     return Response(serializer.errors, status=400)
 
 
 @api_view(['DELETE'])
-def delete_purchase_order(request, po_id):
-    purchase_order = get_object_or_404(PurchaseOrder, po_number=po_id)
+def delete_purchase_order(request, po_number):
+    purchase_order = get_object_or_404(PurchaseOrder, po_number=po_number)
     purchase_order.delete()
     return Response({"message": "Purchase order successfully deleted"}, status=204)
 
@@ -109,3 +110,6 @@ def get_performance(request,pk):
     performance  = get_object_or_404(HistoricalPerformance, vendor_id=pk)
     serializer = HistoricalPerformanceSerializer(performance)
     return Response(serializer.data)
+
+def home_page(request):
+    return render(request,'home.html')
