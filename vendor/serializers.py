@@ -64,7 +64,7 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         ]
         if response_times:
             average_response_time = sum(response_times) / len(response_times)
-            vendor.average_response_time = average_response_time
+            vendor.average_response_time = average_response_time #to find days, divide by 86400
             vendor.save()
 
             # Update the vendor's historical performance
